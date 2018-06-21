@@ -27,24 +27,43 @@ const pcRegions = [
 ];
 
 class PlayerStats extends Component {
-  constructor(props) {
-      super(props);
-      this.state = { platform: 'xbox' };
-      this.onPlatformChange = this.onPlatformChange.bind(this);
-  }
+    constructor(props) {
+        super(props);
+        this.state = {
+            gamertag: '',
+            platform: '',
+            region: '',
+        };
+        this.onGamertagChange = this.onGamertagChange.bind(this);
+        this.onPlatformChange = this.onPlatformChange.bind(this);
+        this.onRegionChange = this.onRegionChange.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
+    }
 
   onPlatformChange(e, { value }) {
-      this.setState({ platform: value });
+      this.setState({ platform: value, region: '' });
+  }
+
+  onRegionChange(e, { value }) {
+      this.setState({ region: value });
+  }
+
+  onGamertagChange(e, { value }) {
+      this.setState({ gamertag: value });
+  }
+
+  onSubmit() {
+      const { gamertag, platform, region } = this.state;
   }
 
   render() {
-      const { platform } = this.state;
+      const { gamertag, platform, region } = this.state;
     return (
-      <Form>
+      <Form onSubmit={this.onSubmit}>
         <Form.Group widths='equal'>
-          <Form.Input fluid label='Gamertag' placeholder='shroud' />
-          <Form.Select fluid label='Platform' options={platforms} placeholder='Pick a Platform' onChange={this.onPlatformChange}/>
-          <Form.Select fluid label='Region' options={platform === 'xbox' ? xboxRegions : pcRegions} placeholder='Pick a Region' />
+          <Form.Input fluid label='Gamertag' placeholder='shroud' value={gamertag} onChange={this.onGamertagChange} />
+          <Form.Select fluid label='Platform' options={platforms} placeholder='Pick a Platform' value={platform} onChange={this.onPlatformChange}/>
+          <Form.Select fluid label='Region' options={platform === 'xbox' ? xboxRegions : pcRegions} placeholder='Pick a Region' value={region} onChange={this.onRegionChange} />
         </Form.Group>
         <Form.Button>Submit</Form.Button>
       </Form>
