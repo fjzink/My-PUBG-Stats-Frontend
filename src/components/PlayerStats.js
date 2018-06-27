@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
 import { Form } from 'semantic-ui-react';
+import { connect } from 'react-redux';
+
+import styles from '../styles/search_button.scss';
+import { setPlatform, setRegion } from '../actions/search_actions';
 
 const platforms = [
   { key: 'xb', text: 'Xbox', value: 'xbox' },
@@ -7,23 +11,23 @@ const platforms = [
 ];
 
 const xboxRegions = [
-    { key: 'as', text: 'Asia', value: 'as' },
-    { key: 'eu', text: 'Europe', value: 'eu' },
     { key: 'na', text: 'North America', value: 'na' },
+    { key: 'eu', text: 'Europe', value: 'eu' },
+    { key: 'as', text: 'Asia', value: 'as' },
     { key: 'oc', text: 'Oceania', value: 'as' },
 ];
 
 const pcRegions = [
-    { key: 'krjp', text: 'Korea', value: 'krjp' },
-    { key: 'jp', text: 'Japan', value: 'jp' },
     { key: 'na', text: 'North America', value: 'na' },
     { key: 'eu', text: 'Europe', value: 'eu' },
-    { key: 'ru', text: 'Russia', value: 'ru' },
+    { key: 'sa', text: 'South and Central America', value: 'sa' },
+    { key: 'krjp', text: 'Korea', value: 'krjp' },
+    { key: 'jp', text: 'Japan', value: 'jp' },
     { key: 'oc', text: 'Oceania', value: 'oc' },
     { key: 'kakao', text: 'Kakao', value: 'kakao' },
     { key: 'sea', text: 'South East Asia', value: 'sea' },
-    { key: 'sa', text: 'South and Central America', value: 'sa' },
     { key: 'as', text: 'Asia', value: 'as' },
+    { key: 'ru', text: 'Russia', value: 'ru' },
 ];
 
 class PlayerStats extends Component {
@@ -40,35 +44,45 @@ class PlayerStats extends Component {
         this.onSubmit = this.onSubmit.bind(this);
     }
 
-  onPlatformChange(e, { value }) {
-      this.setState({ platform: value, region: '' });
-  }
+    onPlatformChange(e, { value }) {
+        this.setState({ platform: value, region: '' });
+        this.props.setPlatform(value);
+    }
 
-  onRegionChange(e, { value }) {
-      this.setState({ region: value });
-  }
+    onRegionChange(e, { value }) {
+        this.setState({ region: value });
+        this.props.setRegion(value);
+    }
 
-  onGamertagChange(e, { value }) {
-      this.setState({ gamertag: value });
-  }
+    onGamertagChange(e, { value }) {
+        this.setState({ gamertag: value });
+    }
 
-  onSubmit() {
-      const { gamertag, platform, region } = this.state;
-  }
+    onSubmit() {
+        const { gamertag, platform, region } = this.state;
+    }
 
-  render() {
-      const { gamertag, platform, region } = this.state;
-    return (
-      <Form onSubmit={this.onSubmit}>
-        <Form.Group widths='equal'>
-          <Form.Input fluid label='Gamertag' placeholder='shroud' value={gamertag} onChange={this.onGamertagChange} />
-          <Form.Select fluid label='Platform' options={platforms} placeholder='Pick a Platform' value={platform} onChange={this.onPlatformChange}/>
-          <Form.Select fluid label='Region' options={platform === 'xbox' ? xboxRegions : pcRegions} placeholder='Pick a Region' value={region} onChange={this.onRegionChange} />
-        </Form.Group>
-        <Form.Button>Submit</Form.Button>
-      </Form>
-    );
-  }
+    render() {
+        const { gamertag, platform, region } = this.state;
+        return (
+            <div className="PlayerStats">
+                <Form onSubmit={this.onSubmit}>
+                    <Form.Group >
+                    <Form.Input fluid width="8" label='Gamertag' placeholder='shroud' value={gamertag} onChange={this.onGamertagChange} />
+                    <Form.Select fluid width="4" label='Platform' options={platforms} placeholder='Pick a Platform' value={platform} onChange={this.onPlatformChange}/>
+                    <Form.Select fluid width="4" label='Region' options={platform === 'xbox' ? xboxRegions : pcRegions} placeholder='Pick a Region' value={region} onChange={this.onRegionChange} />
+                    </Form.Group>
+                    <Form.Button className={styles.searchbutton} color="yellow">Submit</Form.Button>
+                </Form>
+                <p>redux platform: {this.props.searchOptions.platform}</p>
+                <p>redux region: {this.props.searchOptions.region}</p>
+            </div>
+        );
+    }
 }
 
-export default PlayerStats;
+function mapStateToProps(state) {
+    return { searchOptions: state.searchOptions };
+}
+
+export default connect(mapStateToProps, { setPlatform, setRegion })(PlayerStats);

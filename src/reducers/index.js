@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
-import CounterReducer from './counter_reducer';
+import searchReducer from './search_reducer';
 
 const rootReducer = combineReducers({
-  counter: CounterReducer,
+  searchOptions: searchReducer,
 });
 
 export default rootReducer;
