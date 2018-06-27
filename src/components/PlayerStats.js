@@ -14,7 +14,7 @@ const xboxRegions = [
     { key: 'na', text: 'North America', value: 'na' },
     { key: 'eu', text: 'Europe', value: 'eu' },
     { key: 'as', text: 'Asia', value: 'as' },
-    { key: 'oc', text: 'Oceania', value: 'as' },
+    { key: 'oc', text: 'Oceania', value: 'oc' },
 ];
 
 const pcRegions = [
@@ -47,6 +47,7 @@ class PlayerStats extends Component {
     onPlatformChange(e, { value }) {
         this.setState({ platform: value, region: '' });
         this.props.setPlatform(value);
+        this.props.setRegion('');
     }
 
     onRegionChange(e, { value }) {
@@ -63,7 +64,8 @@ class PlayerStats extends Component {
     }
 
     render() {
-        const { gamertag, platform, region } = this.state;
+        const { gamertag } = this.state;
+        const { platform, region } = this.props.searchOptions;
         return (
             <div className="PlayerStats">
                 <Form onSubmit={this.onSubmit}>
