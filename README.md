@@ -1,37 +1,9 @@
-# React Boilerplate
-This is my boilerplate set up for a React app bundled with Webpack with some of the basic dependencies needed for React. This project is set up to bundle your css into modules, and is set up with the `sass-loader` to process sass files.
+# My PUBG Stats
+Do you want to know how well you have been playing on PUBG? Do you want to brag to your friends about your KD ratio or your longest kill? My PUBG Stats is a web app and community for PUBG where you can analyze your game statistics. You can search a gamertag to find player stats for a given season, and there are plans to add additional features such as viewing your recent matches and chat rooms for players to discuss game balancing, new maps, etc.
 
-## Usage
+## Motivation
+I am a gamer and PUBG is one of my favorite games. One day I was searching for a cool API to build a project with and I saw that PUBG has a public API. This got me excited to work with an API for one of my favorite games and it inspired me to create this web app for players to look up game statistics. I really enjoy being able to look up statistics on games that I play so I wanted to create a web app that I would enjoy using and that other people would love to use as well.
 
-Clone the repo to your local machine. 
-
-
-```
-git clone https://github.com/fjzink/react-boilerplate.git
-```
-
-
-Install the dependencies with your package manager of choice.
-
-
-```
-yarn install
-```
-
-
-There are scripts to run the development server and to create an optimized production build. 
-
-
-To start the development server run the `start` script:
-
-```
-yarn start
-```
-
-To create a production build of the react app run the `build` script:
-
-```
-yarn build
-```
-
-This will create a `dist/` folder in the root directory of the project if it does not already exist and output your bundled project files into this folder.
+## How It Works
+You can search for player statistics by gamertag, platform, and region. There are different regions for PC and Xbox so once you select the platform you can then select from the appropriate regions.
+![Player Stats Search](https://imgur.com/J8tXykg)
