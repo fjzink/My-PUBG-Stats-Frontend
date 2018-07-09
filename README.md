@@ -6,4 +6,4 @@ I am a gamer and PUBG is one of my favorite games. One day I was searching for a
 
 ## How It Works
 You can search for player statistics by gamertag, platform, and region. There are different regions for PC and Xbox so once you select the platform you can then select from the appropriate regions.
-![Player Stats Search](https://imgur.com/J8tXykg)
+![Player Stats Search](https://i.imgur.com/J8tXykg.png)
