@@ -76,8 +76,6 @@ class PlayerStats extends Component {
                     </Form.Group>
                     <Form.Button className={styles.searchbutton} color="yellow">Submit</Form.Button>
                 </Form>
-                <p>redux platform: {this.props.searchOptions.platform}</p>
-                <p>redux region: {this.props.searchOptions.region}</p>
             </div>
         );
     }
