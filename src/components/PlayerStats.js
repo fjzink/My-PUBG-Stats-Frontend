@@ -5,6 +5,7 @@ import axios from 'axios';
 
 import styles from '../styles/search_button.scss';
 import { setPlatform, setRegion } from '../actions/search_actions';
+import { setSeasons } from '../actions/seasons_actions';
 
 const platforms = [
   { key: 'xb', text: 'Xbox', value: 'xbox' },
@@ -45,8 +46,20 @@ class PlayerStats extends Component {
 
     componentDidMount() {
         const xboxParams = { params: { region: 'xbox-na' } };
-        axios.get('http://localhost:3000/pubg/seasons', xboxParams)
-            .then(response => console.log(response.data.data));
+        const pcParams = { params: { region: 'pc-na' } };
+        const seasonsURL = 'http://localhost:3000/pubg/seasons';
+        axios.all([
+            axios.get(seasonsURL, xboxParams),
+            axios.get(seasonsURL, pcParams),
+        ])
+            .then(axios.spread((xboxRes, pcRes) => {
+                const seasons = {
+                    xboxSeasons: xboxRes.data.data,
+                    pcSeasons: pcRes.data.data,
+                };
+                localStorage.setItem('seasons', JSON.stringify(seasons));
+                this.props.setSeasons(seasons);
+            }));
     }
 
     onPlatformChange(e, { value }) {
@@ -71,6 +84,7 @@ class PlayerStats extends Component {
     render() {
         const { gamertag } = this.state;
         const { platform, region } = this.props.searchOptions;
+        const { seasons } = this.props;
         return (
             <div className="PlayerStats">
                 <Form onSubmit={this.onSubmit}>
@@ -87,7 +101,10 @@ class PlayerStats extends Component {
 }
 
 function mapStateToProps(state) {
-    return { searchOptions: state.searchOptions };
+    return {
+        searchOptions: state.searchOptions,
+        seasons: state.seasons,
+    };
 }
 
-export default connect(mapStateToProps, { setPlatform, setRegion })(PlayerStats);
+export default connect(mapStateToProps, { setPlatform, setRegion, setSeasons })(PlayerStats);
