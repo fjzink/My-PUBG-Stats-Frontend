@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Form } from 'semantic-ui-react';
 import { connect } from 'react-redux';
+import axios from 'axios';
 
 import styles from '../styles/search_button.scss';
 import { setPlatform, setRegion } from '../actions/search_actions';
@@ -35,13 +36,17 @@ class PlayerStats extends Component {
         super(props);
         this.state = {
             gamertag: '',
-            platform: '',
-            region: '',
         };
         this.onGamertagChange = this.onGamertagChange.bind(this);
         this.onPlatformChange = this.onPlatformChange.bind(this);
         this.onRegionChange = this.onRegionChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+    }
+
+    componentDidMount() {
+        const xboxParams = { params: { region: 'xbox-na' } };
+        axios.get('http://localhost:3000/pubg/seasons', xboxParams)
+            .then(response => console.log(response.data.data));
     }
 
     onPlatformChange(e, { value }) {
