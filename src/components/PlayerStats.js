@@ -45,6 +45,16 @@ class PlayerStats extends Component {
     }
 
     componentDidMount() {
+        let seasons = localStorage.getItem('seasons');
+        if (seasons) {
+            seasons = JSON.parse(seasons);
+            this.props.setSeasons(seasons);
+        } else {
+            this.fetchSeasons();
+        }
+    }
+
+    fetchSeasons() {
         const xboxParams = { params: { region: 'xbox-na' } };
         const pcParams = { params: { region: 'pc-na' } };
         const seasonsURL = 'http://localhost:3000/pubg/seasons';
@@ -60,6 +70,13 @@ class PlayerStats extends Component {
                 localStorage.setItem('seasons', JSON.stringify(seasons));
                 this.props.setSeasons(seasons);
             }));
+    }
+
+    getCachedSeasons() {
+        let seasons = localStorage.getItem('seasons');
+        seasons = JSON.parse(seasons);
+        console.log(seasons);
+        this.props.setSeasons(seasons);
     }
 
     onPlatformChange(e, { value }) {
