@@ -72,13 +72,6 @@ class PlayerStats extends Component {
             }));
     }
 
-    getCachedSeasons() {
-        let seasons = localStorage.getItem('seasons');
-        seasons = JSON.parse(seasons);
-        console.log(seasons);
-        this.props.setSeasons(seasons);
-    }
-
     onPlatformChange(e, { value }) {
         this.setState({ platform: value, region: '' });
         this.props.setPlatform(value);
