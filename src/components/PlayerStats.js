@@ -49,9 +49,9 @@ class PlayerStats extends Component {
         let lastUpdated = localStorage.getItem('seasonsUpdated');
         lastUpdated = parseInt(lastUpdated, 10);
         const timeSinceUpdated = Date.now() - lastUpdated;
-        const oneHour = 60 * 60 * 1000;
+        const oneDay = 24 * 60 * 60 * 1000;
         let seasons = localStorage.getItem('seasons');
-        if (seasons && (timeSinceUpdated < oneHour)) {
+        if (seasons && (timeSinceUpdated < oneDay)) {
             seasons = JSON.parse(seasons);
             this.props.setSeasons(seasons);
         } else {
