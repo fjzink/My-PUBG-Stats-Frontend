@@ -4,9 +4,8 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 
 import styles from '../styles/search_button.scss';
-import { setPlatform, setRegion } from '../actions/search_actions';
+import { setPlatform, setRegion, setGamertag } from '../actions/search_actions';
 import { setSeasons } from '../actions/seasons_actions';
-import { last } from '../../node_modules/rxjs/operator/last';
 
 const platforms = [
   { key: 'xb', text: 'Xbox', value: 'xbox' },
@@ -36,12 +35,9 @@ const pcRegions = [
 class PlayerStats extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            gamertag: '',
-        };
         this.onGamertagChange = this.onGamertagChange.bind(this);
-        this.onPlatformChange = this.onPlatformChange.bind(this);
         this.onRegionChange = this.onRegionChange.bind(this);
+        this.onPlatformChange = this.onPlatformChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
     }
 
@@ -79,18 +75,16 @@ class PlayerStats extends Component {
     }
 
     onPlatformChange(e, { value }) {
-        this.setState({ platform: value, region: '' });
         this.props.setPlatform(value);
         this.props.setRegion('');
     }
 
     onRegionChange(e, { value }) {
-        this.setState({ region: value });
         this.props.setRegion(value);
     }
 
     onGamertagChange(e, { value }) {
-        this.setState({ gamertag: value });
+        this.props.setGamertag(value);
     }
 
     onSubmit() {
@@ -98,11 +92,13 @@ class PlayerStats extends Component {
     }
 
     render() {
-        const { gamertag } = this.state;
-        const { platform, region } = this.props.searchOptions;
+        const { platform, region, gamertag } = this.props.searchOptions;
         const { seasons } = this.props;
         return (
             <div className="PlayerStats">
+                <p>platform: {platform}</p>
+                <p>region: {region}</p>
+                <p>gamertag: {gamertag}</p>
                 <Form onSubmit={this.onSubmit}>
                     <Form.Group >
                     <Form.Input fluid width="8" label='Gamertag' placeholder='shroud' value={gamertag} onChange={this.onGamertagChange} />
@@ -123,4 +119,9 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps, { setPlatform, setRegion, setSeasons })(PlayerStats);
+export default connect(mapStateToProps, {
+    setPlatform,
+    setRegion,
+    setSeasons,
+    setGamertag,
+})(PlayerStats);
