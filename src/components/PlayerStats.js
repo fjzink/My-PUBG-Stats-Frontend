@@ -96,9 +96,6 @@ class PlayerStats extends Component {
         const { seasons } = this.props;
         return (
             <div className="PlayerStats">
-                <p>platform: {platform}</p>
-                <p>region: {region}</p>
-                <p>gamertag: {gamertag}</p>
                 <Form onSubmit={this.onSubmit}>
                     <Form.Group >
                     <Form.Input fluid width="8" label='Gamertag' placeholder='shroud' value={gamertag} onChange={this.onGamertagChange} />
