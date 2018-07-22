@@ -65,8 +65,8 @@ class PlayerStats extends Component {
         ])
             .then(axios.spread((xboxRes, pcRes) => {
                 const seasons = {
-                    xboxSeasons: xboxRes.data.data,
-                    pcSeasons: pcRes.data.data,
+                    xbox: xboxRes.data.data,
+                    pc: pcRes.data.data,
                 };
                 localStorage.setItem('seasons', JSON.stringify(seasons));
                 localStorage.setItem('seasonsUpdated', Date.now());
@@ -88,12 +88,23 @@ class PlayerStats extends Component {
     }
 
     onSubmit() {
-        const { gamertag, platform, region } = this.state;
+        const { gamertag, platform, region } = this.props.searchOptions;
+        const { seasons } = this.props;
+        const platformSeasons = seasons[platform];
+        let currentSeason = platformSeasons.find((season) => {
+            return season.attributes.isCurrentSeason === true;
+        });
+        currentSeason = currentSeason.id;
+        const statParams = { params: { region: `${platform}-${region}`, season_id: currentSeason, player_name: gamertag } };
+        const playerStatsURL = 'http://localhost:3000/pubg/player';
+        axios.get(playerStatsURL, statParams)
+            .then((playerStats) => {
+                const gameStats = playerStats.data.data.attributes.gameModeStats;
+            });
     }
 
     render() {
         const { platform, region, gamertag } = this.props.searchOptions;
-        const { seasons } = this.props;
         return (
             <div className="PlayerStats">
                 <Form onSubmit={this.onSubmit}>
