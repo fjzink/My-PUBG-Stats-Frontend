@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { Form } from 'semantic-ui-react';
+import { Form, Input } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 
 import styles from '../styles/search_button.scss';
 import { setPlatform, setRegion, setGamertag } from '../actions/search_actions';
 import { setSeasons } from '../actions/seasons_actions';
+import { addStats } from '../actions/playerstats_actions';
 
 const platforms = [
   { key: 'xb', text: 'Xbox', value: 'xbox' },
@@ -39,9 +40,12 @@ class PlayerStats extends Component {
         this.onRegionChange = this.onRegionChange.bind(this);
         this.onPlatformChange = this.onPlatformChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+        this.gamertagInput = React.createRef();
+        this.focusGamertagInput = this.focusGamertagInput.bind(this);
     }
 
     componentDidMount() {
+        this.focusGamertagInput();
         let lastUpdated = localStorage.getItem('seasonsUpdated');
         lastUpdated = parseInt(lastUpdated, 10);
         const timeSinceUpdated = Date.now() - lastUpdated;
@@ -54,6 +58,10 @@ class PlayerStats extends Component {
             this.fetchSeasons();
         }
     }
+
+    focusGamertagInput() {
+        this.gamertagInput.current.focus();
+      }
 
     fetchSeasons() {
         const xboxParams = { params: { region: 'xbox-na' } };
@@ -100,18 +108,23 @@ class PlayerStats extends Component {
         axios.get(playerStatsURL, statParams)
             .then((playerStats) => {
                 const gameStats = playerStats.data.data.attributes.gameModeStats;
+                this.props.addStats(gameStats);
             });
     }
 
     render() {
         const { platform, region, gamertag } = this.props.searchOptions;
+        const { gameStats } = this.props;
         return (
             <div className="PlayerStats">
                 <Form onSubmit={this.onSubmit}>
                     <Form.Group >
-                    <Form.Input fluid width="8" label='Gamertag' placeholder='shroud' value={gamertag} onChange={this.onGamertagChange} />
-                    <Form.Select fluid width="4" label='Platform' options={platforms} placeholder='Pick a Platform' value={platform} onChange={this.onPlatformChange}/>
-                    <Form.Select fluid width="4" label='Region' options={platform === 'xbox' ? xboxRegions : pcRegions} placeholder='Pick a Region' value={region} onChange={this.onRegionChange} />
+                        <Form.Field width="8">
+                            <label>Gamertag</label>
+                            <Input ref={this.gamertagInput} fluid placeholder='shroud' value={gamertag} onChange={this.onGamertagChange} />
+                        </Form.Field>
+                        <Form.Select fluid width="4" label='Platform' options={platforms} placeholder='Pick a Platform' value={platform} onChange={this.onPlatformChange}/>
+                        <Form.Select fluid width="4" label='Region' options={platform === 'xbox' ? xboxRegions : pcRegions} placeholder='Pick a Region' value={region} onChange={this.onRegionChange} />
                     </Form.Group>
                     <Form.Button className={styles.searchbutton} color="yellow">Search</Form.Button>
                 </Form>
@@ -124,6 +137,7 @@ function mapStateToProps(state) {
     return {
         searchOptions: state.searchOptions,
         seasons: state.seasons,
+        gameStats: state.gameStats,
     };
 }
 
@@ -132,4 +146,5 @@ export default connect(mapStateToProps, {
     setRegion,
     setSeasons,
     setGamertag,
+    addStats,
 })(PlayerStats);
