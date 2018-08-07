@@ -3,6 +3,7 @@ import { Form, Input } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 
+import ShowStats from './ShowStats';
 import styles from '../styles/search_button.scss';
 import { setPlatform, setRegion, setGamertag } from '../actions/search_actions';
 import { setSeasons } from '../actions/seasons_actions';
@@ -128,6 +129,11 @@ class PlayerStats extends Component {
                     </Form.Group>
                     <Form.Button className={styles.searchbutton} color="yellow">Search</Form.Button>
                 </Form>
+                {gameStats.currentPlayerStats ?
+                    <ShowStats
+                        currentPlayerStats={gameStats.currentPlayerStats}
+                    />
+                    : null}
             </div>
         );
     }
