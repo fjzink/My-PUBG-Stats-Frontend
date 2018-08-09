@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Input } from 'semantic-ui-react';
+import { Form, Input, Loader, Dimmer } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 
@@ -43,6 +43,7 @@ class PlayerStats extends Component {
         this.onSubmit = this.onSubmit.bind(this);
         this.gamertagInput = React.createRef();
         this.focusGamertagInput = this.focusGamertagInput.bind(this);
+        this.state = { loaderActive: false };
     }
 
     componentDidMount() {
@@ -106,8 +107,10 @@ class PlayerStats extends Component {
         currentSeason = currentSeason.id;
         const statParams = { params: { region: `${platform}-${region}`, season_id: currentSeason, player_name: gamertag } };
         const playerStatsURL = 'http://localhost:3000/pubg/player';
+        this.setState({ loaderActive: true });
         axios.get(playerStatsURL, statParams)
             .then((playerStats) => {
+                this.setState({ loaderActive: false });
                 const gameStats = playerStats.data.data.attributes.gameModeStats;
                 this.props.addStats(gameStats);
             });
@@ -129,6 +132,9 @@ class PlayerStats extends Component {
                     </Form.Group>
                     <Form.Button className={styles.searchbutton} color="yellow">Search</Form.Button>
                 </Form>
+                <Dimmer active={this.state.loaderActive}>
+                    <Loader size={'big'}/>
+                </Dimmer>
                 {gameStats.currentPlayerStats ?
                     <ShowStats
                         currentPlayerStats={gameStats.currentPlayerStats}
