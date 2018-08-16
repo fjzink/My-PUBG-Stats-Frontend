@@ -1,11 +1,18 @@
 import React, { Component } from 'react';
-import { Form, Input, Loader, Dimmer } from 'semantic-ui-react';
+import { Form, Input, Loader, Dimmer, Message } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 
 import ShowStats from './ShowStats';
 import styles from '../styles/search_button.scss';
-import { setPlatform, setRegion, setGamertag } from '../actions/search_actions';
+import {
+    setPlatform,
+    setRegion,
+    setGamertag,
+    flipLoaderState,
+    showError,
+    hideError,
+} from '../actions/search_actions';
 import { setSeasons } from '../actions/seasons_actions';
 import { addStats } from '../actions/playerstats_actions';
 
@@ -43,7 +50,6 @@ class PlayerStats extends Component {
         this.onSubmit = this.onSubmit.bind(this);
         this.gamertagInput = React.createRef();
         this.focusGamertagInput = this.focusGamertagInput.bind(this);
-        this.state = { loaderActive: false };
     }
 
     componentDidMount() {
@@ -107,17 +113,28 @@ class PlayerStats extends Component {
         currentSeason = currentSeason.id;
         const statParams = { params: { region: `${platform}-${region}`, season_id: currentSeason, player_name: gamertag } };
         const playerStatsURL = 'http://localhost:3000/pubg/player';
-        this.setState({ loaderActive: true });
+        this.props.flipLoaderState();
         axios.get(playerStatsURL, statParams)
             .then((playerStats) => {
-                this.setState({ loaderActive: false });
+                this.props.flipLoaderState();
+                this.props.hideError();
                 const gameStats = playerStats.data.data.attributes.gameModeStats;
                 this.props.addStats(gameStats);
+            })
+            .catch((error) => {
+                this.props.flipLoaderState();
+                this.props.showError();
             });
     }
 
     render() {
-        const { platform, region, gamertag } = this.props.searchOptions;
+        const {
+            platform,
+            region,
+            gamertag,
+            loaderActive,
+            displayError,
+        } = this.props.searchOptions;
         const { gameStats } = this.props;
         return (
             <div className="PlayerStats">
@@ -132,14 +149,18 @@ class PlayerStats extends Component {
                     </Form.Group>
                     <Form.Button className={styles.searchbutton} color="yellow">Search</Form.Button>
                 </Form>
-                <Dimmer active={this.state.loaderActive}>
+                <Dimmer active={loaderActive}>
                     <Loader size={'big'}/>
                 </Dimmer>
-                {gameStats.currentPlayerStats ?
+                {gameStats.currentPlayerStats && displayError ?
                     <ShowStats
-                        currentPlayerStats={gameStats.currentPlayerStats}
+                        stats={gameStats.currentPlayerStats}
                     />
                     : null}
+                <Message negative compact hidden={displayError}>
+                    <Message.Header>Search Failed</Message.Header>
+                    <p>Sorry, we couldn't find that player.</p>
+                </Message>
             </div>
         );
     }
@@ -159,4 +180,7 @@ export default connect(mapStateToProps, {
     setSeasons,
     setGamertag,
     addStats,
+    flipLoaderState,
+    showError,
+    hideError,
 })(PlayerStats);

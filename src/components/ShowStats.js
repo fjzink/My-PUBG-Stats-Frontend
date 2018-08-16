@@ -31,7 +31,7 @@ export default (props) => {
         roundsPlayed,
         top10s,
         wins,
-    } = props.currentPlayerStats['duo-fpp'];
+    } = props.stats['duo-fpp'];
 
     return (
         <div className={`ShowStats ${styles.showStats}`}>
