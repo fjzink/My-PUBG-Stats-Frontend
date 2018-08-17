@@ -1,10 +1,61 @@
 import React from 'react';
-import { Card, Table, Popup } from 'semantic-ui-react';
+import { Card, Table, Popup, Form } from 'semantic-ui-react';
 import round from 'lodash/round';
 
 import styles from '../styles/showstats.scss';
 
+const gameModeOptions = [
+    {
+        text: 'Solo',
+        value: 'solo',
+        key: 'solo',
+    },
+    {
+        text: 'Solo FPP',
+        value: 'solo-fpp',
+        key: 'solo-fpp',
+    },
+    {
+        text: 'Duo',
+        value: 'duo',
+        key: 'duo',
+    },
+    {
+        text: 'Duo FPP',
+        value: 'duo-fpp',
+        key: 'duo-fpp',
+    },
+    {
+        text: 'Squad',
+        value: 'squad',
+        key: 'squad',
+    },
+    {
+        text: 'Squad FPP',
+        value: 'squad-fpp',
+        key: 'squad-fpp',
+    },
+];
+
+const kdRatio = (kills, losses) => {
+    if (losses <= 0) {
+        return 0;
+    }
+
+    return round((kills / losses), 2);
+};
+
+const winPercentage = (wins, roundsPlayed) => {
+    if (roundsPlayed <= 0) {
+        return 0;
+    }
+
+    return round(((wins / roundsPlayed) * 100), 1);
+};
+
 export default (props) => {
+    const handleGameMode = (e, { value }) => props.setGameMode(value);
+    const { activeMode } = props;
     const {
         kills,
         dBNOs,
@@ -23,7 +74,6 @@ export default (props) => {
         longestKill,
         timeSurvived,
         longestTimeSurvived,
-        mostSurvivalTime,
         walkDistance,
         rideDistance,
         vehicleDestroys,
@@ -31,10 +81,18 @@ export default (props) => {
         roundsPlayed,
         top10s,
         wins,
-    } = props.stats['duo-fpp'];
+    } = props.stats[activeMode];
 
     return (
         <div className={`ShowStats ${styles.showStats}`}>
+            <Form className={styles.gameMode}>
+                <Form.Select
+                    width='6'
+                    options={gameModeOptions}
+                    onChange={handleGameMode}
+                    value={activeMode}
+                />
+            </Form>
             <Card.Group centered>
                 <Card raised className='kills'>
                     <Card.Content>
@@ -64,7 +122,7 @@ export default (props) => {
                                 </Table.Row>
                                 <Table.Row>
                                     <Table.Cell>KD Ratio</Table.Cell>
-                                    <Table.Cell>{round((kills / losses), 2)}</Table.Cell>
+                                    <Table.Cell>{kdRatio(kills, losses)}</Table.Cell>
                                 </Table.Row>
                             </Table.Body>
                         </Table>
@@ -194,7 +252,7 @@ export default (props) => {
                                 <Table.Row>
                                     <Table.Cell>Win Percentage</Table.Cell>
                                     <Table.Cell>
-                                        {round(((wins / roundsPlayed) * 100), 1)} %
+                                        {winPercentage(wins, roundsPlayed)} %
                                     </Table.Cell>
                                 </Table.Row>
                             </Table.Body>

@@ -14,7 +14,7 @@ import {
     hideError,
 } from '../actions/search_actions';
 import { setSeasons } from '../actions/seasons_actions';
-import { addStats } from '../actions/playerstats_actions';
+import { addStats, setGameMode } from '../actions/playerstats_actions';
 
 const platforms = [
   { key: 'xb', text: 'Xbox', value: 'xbox' },
@@ -155,9 +155,11 @@ class PlayerStats extends Component {
                 {gameStats.currentPlayerStats && displayError ?
                     <ShowStats
                         stats={gameStats.currentPlayerStats}
+                        setGameMode={this.props.setGameMode}
+                        activeMode={gameStats.gameMode}
                     />
                     : null}
-                <Message negative compact hidden={displayError}>
+                <Message negative hidden={displayError}>
                     <Message.Header>Search Failed</Message.Header>
                     <p>Sorry, we couldn't find that player.</p>
                 </Message>
@@ -183,4 +185,5 @@ export default connect(mapStateToProps, {
     flipLoaderState,
     showError,
     hideError,
+    setGameMode,
 })(PlayerStats);
