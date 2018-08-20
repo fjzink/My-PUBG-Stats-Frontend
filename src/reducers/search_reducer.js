@@ -5,6 +5,8 @@ import {
     LOADER_STATE,
     SHOW_ERROR,
     HIDE_ERROR,
+    SHOW_FORM_ERROR,
+    HIDE_FORM_ERROR,
 } from '../actions/search_actions';
 
 const defaultState = {
@@ -13,6 +15,7 @@ const defaultState = {
     gamertag: '',
     loaderActive: false,
     displayError: true,
+    displayFormError: false,
 };
 
 export default function (state = defaultState, action) {
@@ -29,6 +32,10 @@ export default function (state = defaultState, action) {
             return { ...state, displayError: false };
         case HIDE_ERROR:
             return { ...state, displayError: true };
+        case SHOW_FORM_ERROR:
+            return { ...state, displayFormError: true };
+        case HIDE_FORM_ERROR:
+            return { ...state, displayFormError: false };
         default:
             return state;
     }

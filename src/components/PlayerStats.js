@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Input, Loader, Dimmer, Message } from 'semantic-ui-react';
+import { Form, Input, Loader, Dimmer, Message, Header } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 
@@ -12,6 +12,8 @@ import {
     flipLoaderState,
     showError,
     hideError,
+    showFormError,
+    hideFormError,
 } from '../actions/search_actions';
 import { setSeasons } from '../actions/seasons_actions';
 import { addStats, setGameMode } from '../actions/playerstats_actions';
@@ -113,8 +115,12 @@ class PlayerStats extends Component {
         currentSeason = currentSeason.id;
         const statParams = { params: { region: `${platform}-${region}`, season_id: currentSeason, player_name: gamertag } };
         const playerStatsURL = 'http://localhost:3000/pubg/player';
-        this.props.flipLoaderState();
-        axios.get(playerStatsURL, statParams)
+        if (gamertag.length === 0 || platform.length === 0 || region.length === 0) {
+            this.props.showFormError();
+        } else {
+            this.props.hideFormError();
+            this.props.flipLoaderState();
+            axios.get(playerStatsURL, statParams)
             .then((playerStats) => {
                 this.props.flipLoaderState();
                 this.props.hideError();
@@ -125,6 +131,7 @@ class PlayerStats extends Component {
                 this.props.flipLoaderState();
                 this.props.showError();
             });
+        }
     }
 
     render() {
@@ -134,11 +141,12 @@ class PlayerStats extends Component {
             gamertag,
             loaderActive,
             displayError,
+            displayFormError,
         } = this.props.searchOptions;
         const { gameStats } = this.props;
         return (
             <div className="PlayerStats">
-                <Form onSubmit={this.onSubmit}>
+                <Form error={displayFormError} onSubmit={this.onSubmit}>
                     <Form.Group >
                         <Form.Field width="8">
                             <label>Gamertag</label>
@@ -147,6 +155,11 @@ class PlayerStats extends Component {
                         <Form.Select fluid width="4" label='Platform' options={platforms} placeholder='Pick a Platform' value={platform} onChange={this.onPlatformChange}/>
                         <Form.Select fluid width="4" label='Region' options={platform === 'xbox' ? xboxRegions : pcRegions} placeholder='Pick a Region' value={region} onChange={this.onRegionChange} />
                     </Form.Group>
+                    <Message
+                        error
+                        header='Incomplete Form'
+                        content='Please fill out all fields before searching.'
+                    />
                     <Form.Button className={styles.searchbutton} color="yellow">Search</Form.Button>
                 </Form>
                 <Dimmer active={loaderActive}>
@@ -186,4 +199,6 @@ export default connect(mapStateToProps, {
     showError,
     hideError,
     setGameMode,
+    showFormError,
+    hideFormError,
 })(PlayerStats);

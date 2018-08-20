@@ -88,6 +88,7 @@ export default (props) => {
             <Form className={styles.gameMode}>
                 <Form.Select
                     width='6'
+                    label='Game Mode'
                     options={gameModeOptions}
                     onChange={handleGameMode}
                     value={activeMode}

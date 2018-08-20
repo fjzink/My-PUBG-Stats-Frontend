@@ -4,6 +4,8 @@ export const SET_GAMERTAG = 'set_gamertag';
 export const LOADER_STATE = 'loader_state';
 export const SHOW_ERROR = 'show_error';
 export const HIDE_ERROR = 'hide_error';
+export const SHOW_FORM_ERROR = 'show_form_error';
+export const HIDE_FORM_ERROR = 'hide_form_error';
 
 export function setPlatform(platform) {
     return {
@@ -36,4 +38,12 @@ export function showError() {
 
 export function hideError() {
     return { type: HIDE_ERROR };
+}
+
+export function showFormError() {
+    return { type: SHOW_FORM_ERROR };
+}
+
+export function hideFormError() {
+    return { type: HIDE_FORM_ERROR };
 }
