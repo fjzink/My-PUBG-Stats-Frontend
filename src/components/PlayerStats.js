@@ -1,12 +1,22 @@
 import React, { Component } from 'react';
-import { Form } from 'semantic-ui-react';
+import { Form, Input, Loader, Dimmer, Message, Header } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 
+import ShowStats from './ShowStats';
 import styles from '../styles/search_button.scss';
-import { setPlatform, setRegion } from '../actions/search_actions';
+import {
+    setPlatform,
+    setRegion,
+    setGamertag,
+    flipLoaderState,
+    showError,
+    hideError,
+    showFormError,
+    hideFormError,
+} from '../actions/search_actions';
 import { setSeasons } from '../actions/seasons_actions';
-import { last } from '../../node_modules/rxjs/operator/last';
+import { addStats, setGameMode } from '../actions/playerstats_actions';
 
 const platforms = [
   { key: 'xb', text: 'Xbox', value: 'xbox' },
@@ -36,16 +46,16 @@ const pcRegions = [
 class PlayerStats extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            gamertag: '',
-        };
         this.onGamertagChange = this.onGamertagChange.bind(this);
-        this.onPlatformChange = this.onPlatformChange.bind(this);
         this.onRegionChange = this.onRegionChange.bind(this);
+        this.onPlatformChange = this.onPlatformChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+        this.gamertagInput = React.createRef();
+        this.focusGamertagInput = this.focusGamertagInput.bind(this);
     }
 
     componentDidMount() {
+        this.focusGamertagInput();
         let lastUpdated = localStorage.getItem('seasonsUpdated');
         lastUpdated = parseInt(lastUpdated, 10);
         const timeSinceUpdated = Date.now() - lastUpdated;
@@ -59,6 +69,10 @@ class PlayerStats extends Component {
         }
     }
 
+    focusGamertagInput() {
+        this.gamertagInput.current.focus();
+      }
+
     fetchSeasons() {
         const xboxParams = { params: { region: 'xbox-na' } };
         const pcParams = { params: { region: 'pc-na' } };
@@ -69,8 +83,8 @@ class PlayerStats extends Component {
         ])
             .then(axios.spread((xboxRes, pcRes) => {
                 const seasons = {
-                    xboxSeasons: xboxRes.data.data,
-                    pcSeasons: pcRes.data.data,
+                    xbox: xboxRes.data.data,
+                    pc: pcRes.data.data,
                 };
                 localStorage.setItem('seasons', JSON.stringify(seasons));
                 localStorage.setItem('seasonsUpdated', Date.now());
@@ -79,38 +93,90 @@ class PlayerStats extends Component {
     }
 
     onPlatformChange(e, { value }) {
-        this.setState({ platform: value, region: '' });
         this.props.setPlatform(value);
         this.props.setRegion('');
     }
 
     onRegionChange(e, { value }) {
-        this.setState({ region: value });
         this.props.setRegion(value);
     }
 
     onGamertagChange(e, { value }) {
-        this.setState({ gamertag: value });
+        this.props.setGamertag(value);
     }
 
     onSubmit() {
-        const { gamertag, platform, region } = this.state;
+        const { gamertag, platform, region } = this.props.searchOptions;
+        const { seasons } = this.props;
+        const platformSeasons = seasons[platform];
+        let currentSeason = platformSeasons.find((season) => {
+            return season.attributes.isCurrentSeason === true;
+        });
+        currentSeason = currentSeason.id;
+        const trimGamertag = gamertag.trim();
+        const statParams = { params: { region: `${platform}-${region}`, season_id: currentSeason, player_name: trimGamertag } };
+        const playerStatsURL = 'http://localhost:3000/pubg/player';
+        if (gamertag.length === 0 || platform.length === 0 || region.length === 0) {
+            this.props.showFormError();
+        } else {
+            this.props.hideFormError();
+            this.props.flipLoaderState();
+            axios.get(playerStatsURL, statParams)
+            .then((playerStats) => {
+                this.props.flipLoaderState();
+                this.props.hideError();
+                const gameStats = playerStats.data.data.attributes.gameModeStats;
+                this.props.addStats(gameStats);
+            })
+            .catch((error) => {
+                this.props.flipLoaderState();
+                this.props.showError();
+            });
+        }
     }
 
     render() {
-        const { gamertag } = this.state;
-        const { platform, region } = this.props.searchOptions;
-        const { seasons } = this.props;
+        const {
+            platform,
+            region,
+            gamertag,
+            loaderActive,
+            displayError,
+            displayFormError,
+        } = this.props.searchOptions;
+        const { gameStats } = this.props;
         return (
             <div className="PlayerStats">
-                <Form onSubmit={this.onSubmit}>
+                <Form error={displayFormError} onSubmit={this.onSubmit}>
                     <Form.Group >
-                    <Form.Input fluid width="8" label='Gamertag' placeholder='shroud' value={gamertag} onChange={this.onGamertagChange} />
-                    <Form.Select fluid width="4" label='Platform' options={platforms} placeholder='Pick a Platform' value={platform} onChange={this.onPlatformChange}/>
-                    <Form.Select fluid width="4" label='Region' options={platform === 'xbox' ? xboxRegions : pcRegions} placeholder='Pick a Region' value={region} onChange={this.onRegionChange} />
+                        <Form.Field width="8">
+                            <label>Gamertag</label>
+                            <Input ref={this.gamertagInput} fluid placeholder='shroud' value={gamertag} onChange={this.onGamertagChange} />
+                        </Form.Field>
+                        <Form.Select fluid width="4" label='Platform' options={platforms} placeholder='Pick a Platform' value={platform} onChange={this.onPlatformChange}/>
+                        <Form.Select fluid width="4" label='Region' options={platform === 'xbox' ? xboxRegions : pcRegions} placeholder='Pick a Region' value={region} onChange={this.onRegionChange} />
                     </Form.Group>
+                    <Message
+                        error
+                        header='Incomplete Form'
+                        content='Please fill out all fields before searching.'
+                    />
                     <Form.Button className={styles.searchbutton} color="yellow">Search</Form.Button>
                 </Form>
+                <Dimmer active={loaderActive}>
+                    <Loader size={'big'}/>
+                </Dimmer>
+                {gameStats.currentPlayerStats && displayError ?
+                    <ShowStats
+                        stats={gameStats.currentPlayerStats}
+                        setGameMode={this.props.setGameMode}
+                        activeMode={gameStats.gameMode}
+                    />
+                    : null}
+                <Message negative hidden={displayError}>
+                    <Message.Header>Search Failed</Message.Header>
+                    <p>Sorry, we couldn't find that player.</p>
+                </Message>
             </div>
         );
     }
@@ -120,7 +186,20 @@ function mapStateToProps(state) {
     return {
         searchOptions: state.searchOptions,
         seasons: state.seasons,
+        gameStats: state.gameStats,
     };
 }
 
-export default connect(mapStateToProps, { setPlatform, setRegion, setSeasons })(PlayerStats);
+export default connect(mapStateToProps, {
+    setPlatform,
+    setRegion,
+    setSeasons,
+    setGamertag,
+    addStats,
+    flipLoaderState,
+    showError,
+    hideError,
+    setGameMode,
+    showFormError,
+    hideFormError,
+})(PlayerStats);

@@ -1,5 +1,11 @@
 export const SET_PLATFORM = 'set_platform';
 export const SET_REGION = 'set_region';
+export const SET_GAMERTAG = 'set_gamertag';
+export const LOADER_STATE = 'loader_state';
+export const SHOW_ERROR = 'show_error';
+export const HIDE_ERROR = 'hide_error';
+export const SHOW_FORM_ERROR = 'show_form_error';
+export const HIDE_FORM_ERROR = 'hide_form_error';
 
 export function setPlatform(platform) {
     return {
@@ -13,4 +19,31 @@ export function setRegion(region) {
         type: SET_REGION,
         payload: region,
     };
+}
+
+export function setGamertag(gamertag) {
+    return {
+        type: SET_GAMERTAG,
+        payload: gamertag,
+    };
+}
+
+export function flipLoaderState() {
+    return { type: LOADER_STATE };
+}
+
+export function showError() {
+    return { type: SHOW_ERROR };
+}
+
+export function hideError() {
+    return { type: HIDE_ERROR };
+}
+
+export function showFormError() {
+    return { type: SHOW_FORM_ERROR };
+}
+
+export function hideFormError() {
+    return { type: HIDE_FORM_ERROR };
 }
