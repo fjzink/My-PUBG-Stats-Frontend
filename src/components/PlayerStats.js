@@ -113,7 +113,8 @@ class PlayerStats extends Component {
             return season.attributes.isCurrentSeason === true;
         });
         currentSeason = currentSeason.id;
-        const statParams = { params: { region: `${platform}-${region}`, season_id: currentSeason, player_name: gamertag } };
+        const trimGamertag = gamertag.trim();
+        const statParams = { params: { region: `${platform}-${region}`, season_id: currentSeason, player_name: trimGamertag } };
         const playerStatsURL = 'http://localhost:3000/pubg/player';
         if (gamertag.length === 0 || platform.length === 0 || region.length === 0) {
             this.props.showFormError();
