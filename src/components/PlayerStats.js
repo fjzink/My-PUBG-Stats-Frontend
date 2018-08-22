@@ -151,7 +151,7 @@ class PlayerStats extends Component {
                     <Form.Group >
                         <Form.Field width="8">
                             <label>Gamertag</label>
-                            <Input ref={this.gamertagInput} fluid placeholder='shroud' value={gamertag} onChange={this.onGamertagChange} />
+                            <Input icon='search' ref={this.gamertagInput} fluid placeholder='shroud' value={gamertag} onChange={this.onGamertagChange} />
                         </Form.Field>
                         <Form.Select fluid width="4" label='Platform' options={platforms} placeholder='Pick a Platform' value={platform} onChange={this.onPlatformChange}/>
                         <Form.Select fluid width="4" label='Region' options={platform === 'xbox' ? xboxRegions : pcRegions} placeholder='Pick a Region' value={region} onChange={this.onRegionChange} />
