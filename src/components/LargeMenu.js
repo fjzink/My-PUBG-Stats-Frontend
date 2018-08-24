@@ -7,7 +7,7 @@ import styles from '../styles/menu.scss';
 class LargeMenu extends Component {
     constructor(props) {
         super(props);
-        this.state = { activeItem: 'index' };
+        this.state = { activeItem: '' };
     }
 
     handleItemClick = (e, { name }) => this.setState({ activeItem: name });
@@ -37,6 +37,16 @@ class LargeMenu extends Component {
                             to='/signup'
                         >
                             Sign Up
+                        </Menu.Item>
+                        <Menu.Item
+                            className={styles.item}
+                            name='login'
+                            active={activeItem === 'login'}
+                            onClick={this.handleItemClick}
+                            as={Link}
+                            to='/login'
+                        >
+                            Log In
                         </Menu.Item>
                     </Menu.Menu>
                 </Menu>

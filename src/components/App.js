@@ -5,6 +5,7 @@ import SiteHeader from './SiteHeader';
 import NavMenu from './NavMenu';
 import NoMatch from './NoMatch';
 import Signup from './Signup';
+import Login from './Login';
 import styles from '../styles/styles.scss';
 
 const App = () => {
@@ -17,6 +18,7 @@ const App = () => {
                         <Switch>
                             <Route exact path='/' component={PlayerStats} />
                             <Route path='/signup' component={Signup} />
+                            <Route path='/login' component={Login} />
                             <Route component={NoMatch} />
                         </Switch>
                     </div>
